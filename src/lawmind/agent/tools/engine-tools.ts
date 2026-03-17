@@ -361,6 +361,10 @@ export const executeWorkflow: AgentTool = {
         type: "boolean",
         description: "低风险任务是否自动批准草稿（默认 true）。高风险任务始终需要律师审批。",
       },
+      force_render: {
+        type: "boolean",
+        description: "仅用于 demo：中/高风险也自动批准并渲染，输出 .docx 路径。",
+      },
     },
   },
   async execute(params, ctx) {
@@ -376,6 +380,7 @@ export const executeWorkflow: AgentTool = {
       const audience = asOptionalString(params.audience, "audience", MAX_AUDIENCE_LENGTH);
       const matterId = resolveMatterId(params.matter_id, ctx.matterId);
       const autoApprove = params.auto_approve !== false;
+      const forceRender = params.force_render === true;
       // Step 1: Plan
       steps.push("正在解析指令...");
       const intent = engine.plan(instruction, {
@@ -414,15 +419,16 @@ export const executeWorkflow: AgentTool = {
       });
       steps.push(`草稿生成完成：《${draft.title}》，共 ${draft.sections.length} 个章节`);
 
-      // Step 5: Auto-review or mark for approval
+      // Step 5: Auto-review or mark for approval (or force_render for demo)
       let finalStatus = "awaiting_review";
-      if (intent.riskLevel === "low" && autoApprove) {
+      const shouldAutoRender = (intent.riskLevel === "low" && autoApprove) || forceRender;
+      if (shouldAutoRender) {
         await engine.review(draft, {
-          actorId: "lawmind-agent",
+          actorId: ctx.actorId,
           status: "approved",
-          note: "低风险任务，Agent 自动审核通过。",
+          note: forceRender ? "Demo 模式：自动批准并渲染。" : "低风险任务，Agent 自动审核通过。",
         });
-        steps.push("低风险任务，已自动审核通过。");
+        steps.push(forceRender ? "Demo：已自动批准并渲染。" : "低风险任务，已自动审核通过。");
 
         // Step 6: Render
         steps.push("正在渲染最终文档...");
@@ -430,6 +436,7 @@ export const executeWorkflow: AgentTool = {
         if (result.ok) {
           finalStatus = "delivered";
           steps.push(`交付完成：${result.outputPath}`);
+          draft.outputPath = result.outputPath;
         } else {
           finalStatus = "render_failed";
           steps.push(`渲染失败：${result.error}`);

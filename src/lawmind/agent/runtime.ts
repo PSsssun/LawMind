@@ -39,7 +39,8 @@ import type {
 
 const DEFAULT_MAX_TOOL_CALLS = 15;
 const DEFAULT_MAX_HISTORY_MESSAGES = 50;
-const DEFAULT_MODEL_TIMEOUT_MS = 20000;
+/** 模型单次调用超时（起草等任务可能较慢，60s 减少 aborted） */
+const DEFAULT_MODEL_TIMEOUT_MS = 60000;
 const DEFAULT_MODEL_MAX_RETRIES = 2;
 const DEFAULT_TOOL_TIMEOUT_MS = 30000;
 
@@ -111,7 +112,11 @@ async function callModelOnce(
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`Model API error ${response.status}: ${text.slice(0, 500)}`);
+    const hint =
+      response.status === 404
+        ? " 常见原因：模型名错误（如 qwen-max 需与 DashScope 一致）或 baseUrl 路径错误。请检查 .env.lawmind 中 LAWMIND_QWEN_MODEL / LAWMIND_AGENT_MODEL。"
+        : "";
+    throw new Error(`Model API error ${response.status}: ${text.slice(0, 300)}${hint}`);
   }
 
   return (await response.json()) as ChatCompletionResponse;

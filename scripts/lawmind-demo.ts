@@ -25,13 +25,18 @@ async function main() {
     matterId: "demo-matter-001",
   };
 
+  const instruction = "请整理合同审查意见并生成法律备忘录，重点标注风险与待确认事项。";
+  console.log("[LawMind Demo] 使用内置指令（无需输入）：");
+  console.log(`  ${instruction}\n`);
+
   const result = await workflowTool.execute(
     {
-      instruction: "请整理合同审查意见并生成法律备忘录，重点标注风险与待确认事项。",
+      instruction,
       title: "客户合同审查备忘录",
       audience: "客户",
       matter_id: "demo-matter-001",
       auto_approve: true,
+      force_render: true,
     },
     ctx,
   );
@@ -52,8 +57,17 @@ async function main() {
   console.log(`status=${data.status ?? "unknown"}`);
   if (data.outputPath) {
     console.log(`output=${data.outputPath}`);
+    console.log("");
+    console.log("生成结果位置：");
+    console.log(`  ${data.outputPath}`);
+    console.log("  (可用 Word 或 open 命令打开)");
+  } else {
+    console.log(
+      "(无 outputPath；若 status=awaiting_lawyer_review，请用 npm run lawmind:agent 审批后渲染)",
+    );
   }
   if (Array.isArray(data.steps)) {
+    console.log("");
     console.log("steps:");
     for (const step of data.steps) {
       console.log(`- ${step}`);

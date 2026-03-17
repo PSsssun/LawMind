@@ -39,11 +39,14 @@ npm run lawmind:smoke -- --fail-on-empty-claims
 - 安装时 onboard 会生成 `.env.lawmind`（或从 `.env.lawmind.example` 复制）。
 - 按你使用的预设填写 API Key、Base URL、模型名等；未填时 `lawmind:env:check` 会提示缺失项。
 
-**Agent 对话所需（至少其一）：**
+**Agent 对话（`npm run lawmind:agent`）：**
 
-- `LAWMIND_AGENT_API_KEY`、`LAWMIND_AGENT_BASE_URL`、`LAWMIND_AGENT_MODEL`  
-  或
-- `QWEN_API_KEY`、`QWEN_BASE_URL`、`QWEN_MODEL`
+- Agent 会优先读取 `LAWMIND_QWEN_API_KEY`、`LAWMIND_QWEN_MODEL`（与 smoke/demo 共用），无需再配 `LAWMIND_AGENT_*`。
+- 若出现 **This operation was aborted**：多为模型响应超时（如起草合同等任务较慢）。默认已改为 60 秒；仍超时可设 `LAWMIND_AGENT_TIMEOUT_MS=120000`（2 分钟）。
+- 若出现 **Model API error 404**：
+  1. **必须在安装目录下运行**：`cd ~/.lawmind/openclaw` 后再执行 `npm run lawmind:agent`，否则不会加载该目录下的 `.env.lawmind`。
+  2. 启动时会有 `[LawMind Agent] model=xxx baseUrl=xxx cwd=xxx`，请确认 **model** 和 **cwd** 是否符合预期（cwd 应为安装目录）。
+  3. 若 model 正确仍 404，可尝试改为 DashScope 文档中列出的其他 ID（如 `qwen-plus`、`qwen-turbo`），或用 `curl -sS "https://dashscope.aliyuncs.com/compatible-mode/v1/models" -H "Authorization: Bearer $LAWMIND_QWEN_API_KEY"` 查看当前可用模型列表，使用返回的 `id` 作为 `LAWMIND_AGENT_MODEL` / `LAWMIND_QWEN_MODEL`。
 
 **预设说明：**
 
@@ -138,6 +141,8 @@ npm run lawmind:smoke -- --fail-on-empty-claims
 ```bash
 npm run lawmind:demo
 ```
+
+Demo 使用内置指令（合同审查 + 法律备忘录），无需输入；结束后会在终端打印**生成结果位置**（如 `workspace/artifacts/客户合同审查备忘录_xxx.docx`），可用 Word 或 `open <路径>` 打开。
 
 ---
 

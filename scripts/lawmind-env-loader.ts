@@ -8,11 +8,11 @@ export type LoadedEnvFile = {
 };
 
 /**
- * Load .env.lawmind automatically (non-destructive).
+ * Load .env.lawmind so LawMind commands use this file as source of truth.
  *
- * Precedence:
- * 1) existing process.env values (already exported)
- * 2) .env.lawmind values (only fill missing keys)
+ * Precedence: .env.lawmind overrides process.env when present, so that
+ * running from the install dir (e.g. ~/.lawmind/openclaw) always uses
+ * the configured keys/URLs instead of stale shell exports (e.g. 127.0.0.1).
  */
 export function loadLawMindEnv(cwd = process.cwd()): LoadedEnvFile {
   const envPath = path.resolve(cwd, ".env.lawmind");
@@ -22,7 +22,7 @@ export function loadLawMindEnv(cwd = process.cwd()): LoadedEnvFile {
 
   dotenv.config({
     path: envPath,
-    override: false,
+    override: true,
   });
   return { path: envPath, loaded: true };
 }

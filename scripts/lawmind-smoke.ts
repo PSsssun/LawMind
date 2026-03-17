@@ -71,6 +71,14 @@ async function main() {
 
   if (useRealModel && failOnEmptyClaims && bundle.claims.length === 0) {
     console.error("[LawMind] Diagnostic (real model, 0 claims):");
+    console.error(`  env-file=${loaded.path} (${loaded.loaded ? "loaded" : "not found"})`);
+    const chatlawUrl = process.env.LAWMIND_CHATLAW_BASE_URL ?? "(not set)";
+    const chatlawHint =
+      String(chatlawUrl).startsWith("http://127.0.0.1") ||
+      String(chatlawUrl).startsWith("http://localhost")
+        ? " (local; ensure ChatLaw is running or use qwen-only: set LAWMIND_CHATLAW_BASE_URL to https://dashscope.aliyuncs.com/compatible-mode/v1)"
+        : "";
+    console.error(`  LAWMIND_CHATLAW_BASE_URL=${chatlawUrl}${chatlawHint}`);
     console.error(
       `  sources=${bundle.sources.length}, riskFlags=${bundle.riskFlags.length}, missingItems=${bundle.missingItems.length}`,
     );
@@ -82,6 +90,7 @@ async function main() {
     }
     throw new Error(
       "[LawMind] --fail-on-empty-claims: real model returned no claims. " +
+        "Run from the directory that contains your .env.lawmind (e.g. cd ~/.lawmind/openclaw). " +
         "Check .env.lawmind (npm run lawmind:env:check), model connectivity, and that the model returns JSON with a non-empty 'claims' array. " +
         "Run without --fail-on-empty-claims to complete the pipeline and inspect riskFlags.",
     );

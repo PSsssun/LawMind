@@ -35,27 +35,44 @@ const matterId = getArg("matter");
 const singleMessage = getArg("message");
 const listSessionsMode = hasFlag("list-sessions");
 
-// 从环境变量读取模型配置
+// 从环境变量读取模型配置（与 .env.lawmind 中 LAWMIND_QWEN_* 一致，无需重复配置）
+const defaultBaseUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1";
 const modelConfig = {
   provider: "openai-compatible" as const,
   baseUrl:
     process.env.LAWMIND_AGENT_BASE_URL ??
     process.env.QWEN_BASE_URL ??
-    "https://dashscope.aliyuncs.com/compatible-mode/v1",
-  apiKey: process.env.LAWMIND_AGENT_API_KEY ?? process.env.QWEN_API_KEY ?? "",
-  model: process.env.LAWMIND_AGENT_MODEL ?? process.env.QWEN_MODEL ?? "qwen-plus",
+    process.env.LAWMIND_QWEN_BASE_URL ??
+    defaultBaseUrl,
+  apiKey:
+    process.env.LAWMIND_AGENT_API_KEY ??
+    process.env.QWEN_API_KEY ??
+    process.env.LAWMIND_QWEN_API_KEY ??
+    "",
+  model:
+    process.env.LAWMIND_AGENT_MODEL ??
+    process.env.QWEN_MODEL ??
+    process.env.LAWMIND_QWEN_MODEL ??
+    "qwen-plus",
   maxTokens: 4096,
   temperature: 0.3,
+  timeoutMs: process.env.LAWMIND_AGENT_TIMEOUT_MS
+    ? Number(process.env.LAWMIND_AGENT_TIMEOUT_MS)
+    : 60000,
 };
 
 if (!modelConfig.apiKey) {
   console.error("未设置模型 API Key。请在 .env.lawmind 中配置：");
-  console.error("  LAWMIND_AGENT_API_KEY=your-api-key");
-  console.error("  LAWMIND_AGENT_BASE_URL=https://...");
-  console.error("  LAWMIND_AGENT_MODEL=model-name");
-  console.error("\n或使用 Qwen 环境变量：QWEN_API_KEY, QWEN_BASE_URL, QWEN_MODEL");
+  console.error("  LAWMIND_QWEN_API_KEY=your-api-key   （与 smoke/demo 共用）");
+  console.error("  或 LAWMIND_AGENT_API_KEY / QWEN_API_KEY");
+  console.error("  LAWMIND_QWEN_MODEL=qwen-max   （可选，默认 qwen-plus）");
   process.exit(1);
 }
+
+// 启动时打印实际使用的模型与 baseUrl，便于排查 404（请确认在 ~/.lawmind/openclaw 下运行）
+console.error(
+  `[LawMind Agent] model=${modelConfig.model} baseUrl=${modelConfig.baseUrl.replace(/\/$/, "")} cwd=${process.cwd()}`,
+);
 
 const config: AgentConfig = {
   workspaceDir,
