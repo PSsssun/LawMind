@@ -1,0 +1,99 @@
+# OpenClaw 目标文件（文档即记忆）
+
+本文档是**目标与记忆**的单一入口：把项目方向与「我们想做的事」写在这里，便于对齐和回溯。  
+与 [`VISION.md`](VISION.md) 的关系：VISION 描述项目愿景与原则；本文件在此基础上整理为**可执行的目标清单**并保留**我们的待办**。
+
+---
+
+## 一、项目总体目标
+
+- **产品定位**：真正能替你干活的个人 AI 助手（the AI that actually does things）。
+- **运行方式**：跑在你自己的设备与频道里，遵守你的规则。
+- **核心诉求**：易用、多平台、隐私与安全优先。
+
+---
+
+## 二、当前优先目标（来自 VISION）
+
+1. **安全与默认策略**：强默认、风险路径显式且由操作者控制。
+2. **修 bug 与稳定性**：减少崩溃与异常，提升日常可用性。
+3. **安装与首跑体验**：提升 setup 可靠性、首次运行与 onboarding 体验。
+
+---
+
+## 三、下一阶段目标
+
+- 支持主流模型提供商，并保持能力与 fallback 清晰。
+- 加强主要消息渠道支持，并酌情增加高需求渠道。
+- 性能与测试基础设施（CI、覆盖率、回归）。
+- 更好的「电脑使用」与 agent harness 能力。
+- CLI 与 Web 前端的易用性（ergonomics）。
+- 各平台伴侣应用：macOS、iOS、Android、Windows、Linux。
+
+---
+
+## 四、我们的目标 / 我想做的事（LawMind 法律智能助手）
+
+> 方向：在 OpenClaw 经验基础上打造律师行业专用智能体 **LawMind**，用**反脆弱设计**把 OpenClaw 的痛点转化为产品护城河。核心文档见 **[LawMind 愿景](docs/LAWMIND-VISION.md)**、**[LawMind 决策文档](docs/LAWMIND-DECISION.md)**、**[LawMind 架构文档](docs/LAWMIND-ARCHITECTURE.md)**。
+
+**产品定位**：律师的「数字孪生助理团队」——可审计、可追溯、责任边界清晰，越用越懂律师。
+
+### 第一期（当前阶段）— 最小闭环
+
+- [x] 建立双记忆模板：`workspace/MEMORY.md` / `workspace/LAWYER_PROFILE.md`
+- [x] 核心数据结构：`TaskIntent` / `ResearchBundle` / `ArtifactDraft` / `AuditEvent`
+- [x] 代码骨架：`src/lawmind/` 五大模块（Router / Memory / Retrieval / Artifacts / Audit）
+- [~] 接入通用大模型（Retrieval adapter，已支持 OpenAI-compatible，待填生产参数）
+- [~] 接入法律专用模型（Retrieval adapter，已支持 OpenAI-compatible，待填生产参数）
+- [x] Word 模板文件（`workspace/templates/word/`）
+- [~] 人工审核 UI / CLI 交互（已实现 CLI 版本，待补正式界面）
+- [~] 完整端到端测试（已完成 smoke 脚本，待补正式测试用例）
+
+### 第二期 — 扩展与深化
+
+- [ ] PPT 渲染（`render-pptx.ts`）
+- [ ] 案件级记忆：`workspace/cases/<matter-id>/CASE.md`
+- [ ] 律师偏好自动学习（反馈闭环写回 `LAWYER_PROFILE.md`）
+- [ ] 更细粒度法律文书模板库
+
+### 第三期 — 商业化与合规
+
+- [ ] 多律师协作支持
+- [ ] 私有化部署方案
+- [ ] 合规报表与审计链增强
+- [ ] 法律技能市场 + 签名机制
+
+---
+
+## 五、非目标与边界（简要）
+
+以下为当前阶段**暂不纳入**的方向，作为路线图护栏（详见 [VISION.md](VISION.md)）：
+
+- 新 skill 能上 ClawHub 的就不进 core。
+- 全量文档多语言翻译延后（计划后续用 AI 生成）。
+- 与模型提供商定位不清的商业服务集成。
+- 对已有 channel 的纯包装、且无明确能力/安全差异的，不合并。
+- 在 core 内做一等 MCP 运行时（优先用 mcporter 集成）。
+- 默认采用 agent 层级/经理套经理/嵌套规划树架构。
+- 重复现有 agent/tool 能力的重型编排层。
+
+有强烈用户需求或技术理由时，可再讨论调整。
+
+---
+
+## 六、参考
+
+- 愿景与原则：[VISION.md](VISION.md)
+- **LawMind 愿景（文档即记忆）**：[docs/LAWMIND-VISION.md](docs/LAWMIND-VISION.md)
+- **LawMind 决策文档**：[docs/LAWMIND-DECISION.md](docs/LAWMIND-DECISION.md)
+- **LawMind 架构文档**：[docs/LAWMIND-ARCHITECTURE.md](docs/LAWMIND-ARCHITECTURE.md)
+- **LawMind 工程记忆（规划与进度）**：[docs/LAWMIND-PROJECT-MEMORY.md](docs/LAWMIND-PROJECT-MEMORY.md)
+- **LawMind 模型适配说明**：[docs/LAWMIND-MODEL-ADAPTERS.md](docs/LAWMIND-MODEL-ADAPTERS.md)
+- 项目概览与开发：[README.md](README.md)
+- 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md)
+- 安全策略：[SECURITY.md](SECURITY.md)
+- 官方文档：<https://docs.openclaw.ai>
+
+---
+
+_最后更新：可在此记录日期或由维护者按需更新。_
