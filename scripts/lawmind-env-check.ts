@@ -161,7 +161,11 @@ function main() {
   console.log("");
   console.log("Suggested minimal setups");
   console.log("------------------------");
-  console.log("- 快速起步（推荐）: Qwen + ChatLaw");
+  console.log("- 快速起步（无本地法律模型）: qwen-only 预设");
+  console.log(
+    "  需要: LAWMIND_QWEN_API_KEY, LAWMIND_QWEN_MODEL, LAWMIND_CHATLAW_API_KEY(=同 Qwen), LAWMIND_CHATLAW_BASE_URL, LAWMIND_CHATLAW_MODEL",
+  );
+  console.log("- 本地 ChatLaw: qwen-chatlaw 预设");
   console.log(
     "  需要: LAWMIND_QWEN_API_KEY, LAWMIND_QWEN_MODEL, LAWMIND_CHATLAW_BASE_URL, LAWMIND_CHATLAW_MODEL",
   );

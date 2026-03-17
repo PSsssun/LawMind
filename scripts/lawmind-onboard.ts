@@ -2,7 +2,12 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-type PresetId = "qwen-chatlaw" | "deepseek-lawgpt" | "general-lexedge" | "general-partner";
+type PresetId =
+  | "qwen-only"
+  | "qwen-chatlaw"
+  | "deepseek-lawgpt"
+  | "general-lexedge"
+  | "general-partner";
 
 type CliOptions = {
   workspaceDir: string;

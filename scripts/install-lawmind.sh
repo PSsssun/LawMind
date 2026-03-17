@@ -4,7 +4,7 @@ set -euo pipefail
 REPO_URL="${LAWMIND_REPO_URL:-https://github.com/sunhl4/LawMind.git}"
 REPO_BRANCH="${LAWMIND_REPO_BRANCH:-main}"
 INSTALL_DIR="${LAWMIND_INSTALL_DIR:-$HOME/.lawmind/openclaw}"
-PRESET="${LAWMIND_PRESET:-qwen-chatlaw}"
+PRESET="${LAWMIND_PRESET:-qwen-only}"
 
 echo "[LawMind Installer] macOS/Linux one-click install"
 echo "repo: $REPO_URL"

@@ -3,7 +3,12 @@ import path from "node:path";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-type PresetId = "qwen-chatlaw" | "deepseek-lawgpt" | "general-lexedge" | "general-partner";
+type PresetId =
+  | "qwen-only"
+  | "qwen-chatlaw"
+  | "deepseek-lawgpt"
+  | "general-lexedge"
+  | "general-partner";
 
 type CliOptions = {
   preset?: PresetId;
@@ -33,21 +38,25 @@ async function choosePresetInteractive(): Promise<PresetId> {
     output.write("\nLawMind Quick Setup\n");
     output.write("===================\n");
     output.write("Choose a starter preset:\n");
-    output.write("  1) qwen-chatlaw      (recommended)\n");
-    output.write("  2) deepseek-lawgpt   (backup)\n");
-    output.write("  3) general-lexedge   (framework route)\n");
-    output.write("  4) general-partner   (partner local legal model)\n\n");
-    const answer = (await rl.question("Select [1-4] (default: 1): ")).trim();
+    output.write("  1) qwen-only        (no local legal service; general+legal both use Qwen)\n");
+    output.write("  2) qwen-chatlaw     (Qwen + local ChatLaw at 127.0.0.1:8000)\n");
+    output.write("  3) deepseek-lawgpt  (backup)\n");
+    output.write("  4) general-lexedge  (framework route)\n");
+    output.write("  5) general-partner  (partner local legal model)\n\n");
+    const answer = (await rl.question("Select [1-5] (default: 1): ")).trim();
     if (answer === "2") {
-      return "deepseek-lawgpt";
+      return "qwen-chatlaw";
     }
     if (answer === "3") {
-      return "general-lexedge";
+      return "deepseek-lawgpt";
     }
     if (answer === "4") {
+      return "general-lexedge";
+    }
+    if (answer === "5") {
       return "general-partner";
     }
-    return "qwen-chatlaw";
+    return "qwen-only";
   } finally {
     rl.close();
   }
@@ -90,6 +99,14 @@ function buildPresetContent(preset: PresetId): string {
     "",
   ];
 
+  const legalQwenSame = [
+    "# Legal model: same Qwen endpoint (no local ChatLaw). Set API key to same as LAWMIND_QWEN_API_KEY.",
+    "LAWMIND_CHATLAW_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "LAWMIND_CHATLAW_API_KEY=",
+    "LAWMIND_CHATLAW_MODEL=qwen-plus",
+    "",
+  ];
+
   const legalLawGPT = [
     "# Legal model provider (LaWGPT self-hosted)",
     "LAWMIND_LAWGPT_BASE_URL=http://127.0.0.1:8000/v1",
@@ -114,7 +131,9 @@ function buildPresetContent(preset: PresetId): string {
   ];
 
   let body: string[] = [];
-  if (preset === "qwen-chatlaw") {
+  if (preset === "qwen-only") {
+    body = [...commonGeneralQwen, ...legalQwenSame];
+  } else if (preset === "qwen-chatlaw") {
     body = [...commonGeneralQwen, ...legalChatLaw];
   } else if (preset === "deepseek-lawgpt") {
     body = [...commonGeneralDeepSeek, ...legalLawGPT];

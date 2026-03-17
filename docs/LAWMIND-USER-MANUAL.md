@@ -45,7 +45,23 @@ npm run lawmind:smoke -- --fail-on-empty-claims
   或
 - `QWEN_API_KEY`、`QWEN_BASE_URL`、`QWEN_MODEL`
 
-**其他预设（如 qwen-chatlaw）** 需对应 ChatLaw/LawGPT/Partner Legal 等变量，详见 `lawmind:env:check` 输出或 `.env.lawmind.example`。
+**预设说明：**
+
+- **qwen-only**（一键安装默认）：无本地法律模型时，通用与法律检索均走 Qwen。只需填写 `LAWMIND_QWEN_API_KEY`、`LAWMIND_QWEN_MODEL`，并将 `LAWMIND_CHATLAW_API_KEY` 设为与 Qwen 相同的 Key，即可通过 `lawmind:env:check --strict` 和 `lawmind:smoke --fail-on-empty-claims`。
+- **qwen-chatlaw**：需本地 ChatLaw 服务（如 `http://127.0.0.1:8000/v1`），并配置 `LAWMIND_CHATLAW_*`。
+- 其他预设（deepseek-lawgpt、general-lexedge、general-partner）需对应变量，详见 `npm run lawmind:env:check` 输出。
+
+**从 qwen-only 改用本地法律模型：**
+
+- **方式一（推荐）**：直接编辑 `.env.lawmind`，把法律模型相关变量改为本地服务即可，例如：
+  - `LAWMIND_CHATLAW_BASE_URL=http://127.0.0.1:8000/v1`
+  - `LAWMIND_CHATLAW_API_KEY=local`（若本地无需 key 可填 `local`）
+  - `LAWMIND_CHATLAW_MODEL=chatlaw`（与本地服务实际模型名一致）
+- **方式二**：重新生成模板（会覆盖现有 `.env.lawmind`，注意备份已填的 Key）：
+  - `npm run lawmind:onboard -- --preset qwen-chatlaw --yes --skip-smoke`
+  - 然后按提示补全 `LAWMIND_QWEN_*` 与 `LAWMIND_CHATLAW_*`。
+
+切换后执行 `npm run lawmind:env:check` 确认，再跑 `npm run lawmind:smoke -- --fail-on-empty-claims` 验证。
 
 ---
 
