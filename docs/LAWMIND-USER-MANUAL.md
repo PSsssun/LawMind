@@ -3,7 +3,7 @@
 本文档面向**一键安装后的日常使用**，随功能与脚本变更持续维护。若你尚未安装，请先执行：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw/main/scripts/install-lawmind.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sunhl4/LawMind/main/scripts/install-lawmind.sh | bash
 ```
 
 ---
